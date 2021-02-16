@@ -25,3 +25,5 @@ jobs:
           . test/integration/vagrantenv.sh
           export LOG_LEVEL=DEBUG
           bash test/integration/execute_integration_tests_against_test_chain.sh
+          python3 -m pytest -olog_level=$loglevel -v -olog_file=vagrant/data/pytest.log -v \
+            ${TEST_INTEGRATION_PY_DIR}/destructive_test_no_whitelisted_validators.py
