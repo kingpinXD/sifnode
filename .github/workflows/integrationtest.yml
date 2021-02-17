@@ -13,15 +13,18 @@ jobs:
         run: |
           source $HOME/.bash_profile
           bash test/integration/start-integration-env.sh
-      - name: Execute any chain integration tests
+      - name: Execute integration tests
         run: |
           source $HOME/.bash_profile
           . test/integration/vagrantenv.sh
           export LOG_LEVEL=DEBUG
-          bash test/integration/execute_integration_tests_against_any_chain.sh
-      - name: Execute test chain integration tests
-        run: |
-          source $HOME/.bash_profile
-          . test/integration/vagrantenv.sh
-          export LOG_LEVEL=DEBUG
-          bash test/integration/execute_integration_tests_against_test_chain.sh
+          python3 -m pytest -olog_cli=false -olog_level=DEBUG -olog_file=vagrant/data/pytest.log -v $i
+
+          # some destructive tests are marked with pytest.mark.individual_file and they have
+          # to be run individually
+          # (and might modify test/integration/vagrantenv.sh)
+          for i in src/py/test_*
+          do
+            python3 -m pytest -m individual_file -olog_cli=false -olog_level=DEBUG -olog_file=vagrant/data/pytest.log -v $i
+            . test/integration/vagrantenv.sh
+          done

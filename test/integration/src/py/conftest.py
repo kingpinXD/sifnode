@@ -1,10 +1,26 @@
 import copy
 import logging
+from typing import List
 
 import pytest
+from _pytest.config import Config
+from _pytest.main import Session
+from _pytest.nodes import Item
 
 import test_utilities
 from burn_lock_functions import decrease_log_level, force_log_level
+
+
+def pytest_collection_modifyitems(session: Session, config: Config, items: List[Item]):
+    individual_files_requested = config.getoption("-m") == "individual_file"
+    skip_marker = pytest.mark.skip(reason="need -m individual_file option to run")
+    for item in items:
+        if individual_files_requested:
+            if "individual_file" not in item.keywords:
+                item.add_marker(skip_marker)
+        else:
+            if "individual_file" in item.keywords:
+                item.add_marker(skip_marker)
 
 
 @pytest.fixture

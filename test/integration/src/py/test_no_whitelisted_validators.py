@@ -4,14 +4,18 @@
 
 import pytest
 
+import pytest_utilities
+import test_utilities
 from burn_lock_functions import EthereumToSifchainTransferRequest
 from pytest_utilities import generate_minimal_test_account
 
+pytestmark = [pytest.mark.individual_file]
 
+
+@pytest.mark.usefixtures("no_whitelisted_validators")
 def test_transfer_eth_to_ceth_without_a_validator_should_throw_exception(
         basic_transfer_request: EthereumToSifchainTransferRequest,
         source_ethereum_address: str,
-        no_whitelisted_validators,
 ):
     with pytest.raises(Exception):
         basic_transfer_request.ethereum_address = source_ethereum_address
